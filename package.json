@@ -1,0 +1,51 @@
+{
+    "name": "kunpocc-quadtree",
+    "version": "0.0.1",
+    "description": "基于creator3.0+的kunpocc-quadtree库",
+    "main": "./dist/kunpocc-quadtree.cjs",
+    "module": "./dist/kunpocc-quadtree.mjs",
+    "types": "./dist/kunpocc-quadtree.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/kunpocc-quadtree.cjs",
+            "import": "./dist/kunpocc-quadtree.mjs",
+            "types": "./dist/kunpocc-quadtree.d.ts",
+            "default": "./dist/kunpocc-quadtree.cjs"
+        },
+        "./min": {
+            "require": "./dist/kunpocc-quadtree.min.cjs",
+            "import": "./dist/kunpocc-quadtree.min.mjs"
+        }
+    },
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "npm run clean && rollup -c rollup.config.mjs"
+    },
+    "files": [
+        "dist/kunpocc-quadtree.cjs",
+        "dist/kunpocc-quadtree.mjs",
+        "dist/kunpocc-quadtree.min.cjs",
+        "dist/kunpocc-quadtree.min.mjs",
+        "dist/kunpocc-quadtree.d.ts"
+    ],
+    "author": "gongxh",
+    "license": "ISC",
+    "repository": {
+        "type": "gitlab",
+        "url": "https://github.com/Gongxh0901/kunpocc-quadtree"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    },
+    "devDependencies": {
+        "@cocos/creator-types": "^3.8.0",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^12.1.2",
+        "@types/lodash": "^4.17.13",
+        "@types/node": "^22.10.2",
+        "rollup": "^4.28.1",
+        "rollup-plugin-dts": "^6.1.1",
+        "ts-node": "^10.9.2",
+        "tslib": "^2.6.2"
+    }
+}
