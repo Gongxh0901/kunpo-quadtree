@@ -73,10 +73,10 @@ export class Polygon extends Shape {
         let len = points.length;
         for (let i = 0; i < len; i++) {
             let m = points[i];
-            this._realPoints[i] = m.rotate(Math.PI / 180 * this.rotation);
+            let rotated = rotate(Math.PI / 180 * this.rotation, m.x, m.y);
             let a = this._realPoints[i];
-            a.x = a.x * this.scale + this.position.x;
-            a.y = a.y * this.scale + this.position.y;
+            a.x = rotated.x * this.scale + this.position.x;
+            a.y = rotated.y * this.scale + this.position.y;
         }
         return this._realPoints;
     }
