@@ -1,6 +1,6 @@
 {
     "name": "kunpocc-quadtree",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "基于creator3.0+的kunpocc-quadtree库",
     "main": "./dist/kunpocc-quadtree.cjs",
     "module": "./dist/kunpocc-quadtree.mjs",
