@@ -50,8 +50,6 @@ export const QTConfig = {
 
 export class QuadTree {
     /** @internal */
-    private _graphics: Graphics;
-    /** @internal */
     private _shapes_map: Map<number, IShape[]>; // 根据类型存储形状对象
     /** @internal */
     private _trees: QuadTree[] = []; // 存储四个子节点
@@ -65,14 +63,12 @@ export class QuadTree {
      * 创建一个四叉树
      * @param rect 该节点对应的象限在屏幕上的范围
      * @param level 该节点的深度，根节点的默认深度为0
-     * @param graphics cc中用于绘制树的绘制组件
      */
-    constructor(rect: Rect, level: number = 0, graphics: Graphics = undefined) {
+    constructor(rect: Rect, level: number = 0) {
         this._shapes_map = new Map();
         this._trees = [];
         this._level = level || 0;
         this._bounds = rect;
-        this._graphics = graphics;
     }
 
     /**
@@ -153,24 +149,20 @@ export class QuadTree {
     }
 
     /**
-     * 动态更新
+     * 动态更新（对外接口）
      */
-    public update(root?: QuadTree): void {
-        root = root || this;
-        let isRoot = (root === this);
-        isRoot && this.graphicsClear();
+    public update() {
+        this.inner_update(this);
+    }
+
+    private inner_update(root: QuadTree): void {
         this._updateIgnoreShapes(root);
         this._updateShapes(root);
         // 递归刷新子象限
         for (const tree of this._trees) {
-            tree.update(root);
+            tree.inner_update(root);
         }
         this._removeChildTree();
-        this.graphicsTreeBound(root);
-
-        if (isRoot && this._graphics) {
-            this._graphics.stroke();
-        }
     }
 
     public clear(): void {
@@ -243,10 +235,10 @@ export class QuadTree {
         let halfheight = bounds.height * 0.5;
         let nextLevel = this._level + 1;
         this._trees.push(
-            new QuadTree(rect(bounds.center.x, bounds.center.y, halfwidth, halfheight), nextLevel, this._graphics),
-            new QuadTree(rect(x, bounds.center.y, halfwidth, halfheight), nextLevel, this._graphics),
-            new QuadTree(rect(x, y, halfwidth, halfheight), nextLevel, this._graphics),
-            new QuadTree(rect(bounds.center.x, y, halfwidth, halfheight), nextLevel, this._graphics)
+            new QuadTree(rect(bounds.center.x, bounds.center.y, halfwidth, halfheight), nextLevel),
+            new QuadTree(rect(x, bounds.center.y, halfwidth, halfheight), nextLevel),
+            new QuadTree(rect(x, y, halfwidth, halfheight), nextLevel),
+            new QuadTree(rect(bounds.center.x, y, halfwidth, halfheight), nextLevel)
         );
     }
 
@@ -344,29 +336,40 @@ export class QuadTree {
         return size + this._ignore_shapes.length;
     }
 
-    /** 画出当前树的边界 @internal */
-    private graphicsTreeBound(root: QuadTree): void {
-        if (!this._graphics) {
-            return;
+    //#region ================================ 调试接口 ================================
+    /**
+     * 调试时才调用此接口绘制区域
+     * @param graphics cc中用于绘制树的绘制组件
+     */
+    public updateGraphics(graphics: Graphics) {
+        // 清空绘图
+        graphics.clear();
+
+        // 递归绘图
+        this.graphicsTreeBound(graphics, this);
+
+        // 根节点绘制
+        graphics.moveTo(this._bounds.xMin, this._bounds.yMin);
+        graphics.lineTo(this._bounds.xMax, this._bounds.yMin);
+        graphics.lineTo(this._bounds.xMax, this._bounds.yMax);
+        graphics.lineTo(this._bounds.xMin, this._bounds.yMax);
+        graphics.lineTo(this._bounds.xMin, this._bounds.yMin);
+        
+        graphics.stroke();
+    }
+
+    private graphicsTreeBound(graphics: Graphics, root: QuadTree) {
+        // 递归刷新子象限
+        for (const tree of this._trees) {
+            tree.graphicsTreeBound(graphics, root);
         }
         if (this._trees.length > 0) {
-            this._graphics.moveTo(this._bounds.x, this._bounds.center.y);
-            this._graphics.lineTo(this._bounds.x + this._bounds.width, this._bounds.center.y);
+            graphics.moveTo(this._bounds.x, this._bounds.center.y);
+            graphics.lineTo(this._bounds.x + this._bounds.width, this._bounds.center.y);
 
-            this._graphics.moveTo(this._bounds.center.x, this._bounds.y);
-            this._graphics.lineTo(this._bounds.center.x, this._bounds.y + this._bounds.height);
-        }
-        if (this == root) {
-            this._graphics.moveTo(this._bounds.xMin, this._bounds.yMin);
-            this._graphics.lineTo(this._bounds.xMax, this._bounds.yMin);
-            this._graphics.lineTo(this._bounds.xMax, this._bounds.yMax);
-            this._graphics.lineTo(this._bounds.xMin, this._bounds.yMax);
-            this._graphics.lineTo(this._bounds.xMin, this._bounds.yMin);
+            graphics.moveTo(this._bounds.center.x, this._bounds.y);
+            graphics.lineTo(this._bounds.center.x, this._bounds.y + this._bounds.height);
         }
     }
-
-    /** 清除绘制 @internal */
-    private graphicsClear(): void {
-        this._graphics && this._graphics.clear();
-    }
+    //#endregion ================================ 调试接口 ================================
 }
