@@ -256,7 +256,7 @@ export class QuadTree {
         let shapes = this._ignore_shapes;
         let lastIndex = shapes.length - 1;
         let index = 0;
-        while (index < lastIndex) {
+        while (index <= lastIndex) {
             let shape = shapes[index];
             if (!shape.isValid) {
                 if (index !== lastIndex) {
@@ -271,6 +271,7 @@ export class QuadTree {
                     [shapes[index], shapes[lastIndex]] = [shapes[lastIndex], shapes[index]];
                 }
                 root.insert(shapes.pop());
+                lastIndex--;
             } else {
                 index++;
             }
@@ -354,7 +355,7 @@ export class QuadTree {
         graphics.lineTo(this._bounds.xMax, this._bounds.yMax);
         graphics.lineTo(this._bounds.xMin, this._bounds.yMax);
         graphics.lineTo(this._bounds.xMin, this._bounds.yMin);
-        
+
         graphics.stroke();
     }
 
