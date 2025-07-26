@@ -4,7 +4,9 @@
  * @Description: 
  */
 
-import { Rect, Vec2 } from "cc";
+import { Rect } from "../utils/Rect";
+import { Vec2 } from "../utils/Vec2";
+
 
 export enum ShapeType {
     CIRCLE = 1,
@@ -23,10 +25,19 @@ export interface IShape {
     get position(): Vec2;
     get scale(): number;
     get rotation(): number;
+    get isPositionDirty(): boolean;
+
     /** 获取包围盒 */
     getBoundingBox(): Rect;
     setPosition(x: number, y: number): void;
     setScale(value: number): void;
     setRotation(angle: number): void;
+    clearPositionDirty(): void;
     destroy(): void;
+
+    // 对象池相关方法
+    /** 重置对象状态以供重用 */
+    reset(): void;
+    /** 设置掩码 */
+    setMask(mask: number): void;
 }

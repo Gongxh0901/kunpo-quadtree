@@ -1,7 +1,7 @@
 {
     "name": "kunpocc-quadtree",
-    "version": "0.0.3",
-    "description": "基于creator3.0+的kunpocc-quadtree库",
+    "version": "0.1.0",
+    "description": "基于TypeScript的四叉树库",
     "main": "./dist/kunpocc-quadtree.cjs",
     "module": "./dist/kunpocc-quadtree.mjs",
     "types": "./dist/kunpocc-quadtree.d.ts",
@@ -39,7 +39,6 @@
         "registry": "https://registry.npmjs.org/"
     },
     "devDependencies": {
-        "@cocos/creator-types": "^3.8.0",
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^12.1.2",
         "@types/lodash": "^4.17.13",

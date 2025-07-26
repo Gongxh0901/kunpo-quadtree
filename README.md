@@ -1,132 +1,79 @@
-## 四叉树
-> 四叉树是一种通过空间划分来进行高效碰撞查询的数据结构。
+# kunpocc-quadtree
 
-#### 基本概念
+![NPM Version](https://img.shields.io/npm/v/kunpocc-quadtree)
+![License](https://img.shields.io/npm/l/kunpocc-quadtree)
 
-1. 形状类型
+一个使用 TypeScript 编写的高性能、易于使用的四叉树库，专为 2D 游戏和模拟中的高效碰撞检测而设计。
 
-   ```typescript
-   import { QuadTree, Box, Circle, Polygon } from 'kunpocc-quadtree';
-   
-   // 1. 矩形
-   const box = new Box(x, y, width, height, tag);
-   
-   // 2. 圆形
-   const circle = new Circle(x, y, radius, tag);
-   
-   // 3. 多边形
-   const points = [v2(x1, y1), v2(x2, y2), v2(x3, y3)];
-   const polygon = new Polygon(points, tag);
-   ```
+## ✨ 特性
 
-2. 配置参数
+- **TypeScript 支持**: 使用 TypeScript 编写，提供完整的类型定义。
+- **多种形状**: 支持矩形 (`Box`)、圆形 (`Circle`) 和凸多边形 (`Polygon`)。
+- **高效查询**: 通过空间划分优化查询，实现高效的碰撞检测。
+- **性能优化**: 内置对象池 (`ObjectPool`) 以减少垃圾回收，提升性能。
+- **简洁的 API**: 易于集成到现有项目中。
 
-   ```typescript
-   // 四叉树配置
-   const QTConfig = {
-       MAX_SHAPES: 12,  // 每个节点最大形状数量
-       MAX_LEVELS: 5,   // 最大深度
-   }
-   ```
+## 📦 安装
 
-   
-#### 使用示例
+```bash
+npm install kunpocc-quadtree
+```
 
-1. 创建和初始化
+## 🚀 使用示例
 
-   ```typescript
-   import { QuadTree, Box, rect } from 'kunpocc-quadtree';
-   
-   // 创建四叉树（参数：区域范围，层级，绘制组件）
-   const bounds = rect(0, 0, 800, 600);  // x, y, width, height
-   const quadTree = new QuadTree(bounds);
-   
-   // 添加形状
-   const player = new Box(100, 100, 50, 50, 1);  // 玩家碰撞体，tag=1
-   const enemy = new Circle(200, 200, 25, 2);    // 敌人碰撞体，tag=2
-   quadTree.insert(player);
-   quadTree.insert(enemy);
-   ```
+### 创建四叉树
+```typescript
+import { QuadTree, createCircle, createBox, createPolygon } from 'kunpocc-quadtree';
 
-2. 碰撞检测
+// 1. 创建四叉树
+const maxDepth = 4;  // 树的最大深度
+const maxShapes = 20; // 每个节点的最大形状数
+const tree = new QuadTree(0, 0, 750, 1334, maxDepth, maxShapes);
+```
 
-   ```typescript
-   // 检测指定形状与特定标签的碰撞
-   const collisions = quadTree.collide(player, 2);  // 检测玩家与 tag=2 的形状碰撞
-   if (collisions.length > 0) {
-       console.log('发生碰撞！');
-       for (const target of collisions) {
-           // 处理碰撞逻辑
-       }
-   }
-   ```
+### 创建圆形
+```typescript
+const circle = createCircle(10, 1);
+```
 
-3. 动态更新
+### 创建矩形
+```typescript
+const box = createBox(0, 0, 100, 100, 1);
+```
 
-   ```typescript
-   // 在游戏循环中更新四叉树
-   function update() {
-       // 更新形状位置
-       player.position = v2(newX, newY);
-       enemy.position = v2(newX, newY);
-       
-       // 更新四叉树
-       quadTree.update();
-       
-       // 检测碰撞
-       const collisions = quadTree.collide(player, 2);
-   }
-   ```
+### 创建多边形
+```typescript
+const polygon = createPolygon([new Vec2(0, 0), new Vec2(100, 0), new Vec2(100, 100), new Vec2(0, 100)], 1);
+```
 
-4. 清理
+### 插入形状
+```typescript
+tree.insert(circle);
+tree.insert(box);
+tree.insert(polygon);
+```
 
-   ```typescript
-   // 清理四叉树
-   quadTree.clear();
-   ```
+### 碰撞检测
+```typescript
+const shapes = tree.collide(shape, 1);
+```
 
-   
-#### 形状操作
+### 更新四叉树
+```typescript
+tree.update();
+```
 
-1. 位置和缩放
+## 🔧 开发构建
 
-   ```typescript
-   // 设置位置
-   shape.position = v2(x, y);
-   
-   // 设置缩放
-   shape.scale = 1.5;
-   
-   // 获取包围盒
-   const boundingBox = shape.getBoundingBox();
-   ```
+如果你想从源码构建本项目，请按以下步骤操作：
 
-2. 特定形状操作
-
-   ```typescript
-   // 矩形重置
-   box.resetPoints(x, y, width, height);
-   
-   // 圆形半径
-   circle.radius = newRadius;
-   
-   // 多边形顶点
-   polygon.points = newPoints;
-   ```
-
-   
-#### 性能优化建议
-
-1. 合理设置配置参数：
-   - `MAX_SHAPES`：较小的值会导致更频繁的分裂，较大的值会降低查询效率
-   - `MAX_LEVELS`：控制树的最大深度，防止过度分割
-
-2. 碰撞检测优化：
-   - 使用合适的标签系统，只检测需要的碰撞
-   - 根据游戏需求选择合适的形状（圆形计算最快）
-   - 避免使用过于复杂的多边形
-
-3. 更新策略：
-   - 仅在必要时更新四叉树
-   - 对于静态物体，可以使用单独的四叉树
-   - 动态物体频繁更新时，考虑使用更大的边界范围
+1.  克隆仓库
+2.  安装依赖
+    ```bash
+    npm install
+    ```
+3.  执行构建
+    ```bash
+    npm run build
+    ```
+    构建产物将生成在 `dist` 目录下。
