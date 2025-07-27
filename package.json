@@ -19,7 +19,8 @@
     },
     "scripts": {
         "clean": "rm -rf dist",
-        "build": "npm run clean && rollup -c rollup.config.mjs"
+        "copy": "cp -r dist/* ../kunpo-esc/demo/node_modules/kunpocc-quadtree/dist/",
+        "build": "npm run clean && rollup -c rollup.config.mjs && npm run copy"
     },
     "files": [
         "dist/kunpocc-quadtree.cjs",
